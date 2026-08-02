@@ -39,6 +39,15 @@ Go Boot Payload -> Hydrate Store -> Components Read Store -> Hooks Subscribe
 
 **Never fetch data directly in components.**
 
+### Browser capability boundaries
+
+- Use `generateUUID()` from `@/lib/utils` for client-only non-security IDs;
+  never call `crypto.randomUUID()` directly because remote plain-HTTP origins
+  can expose `crypto` without `randomUUID`. Use `copyToClipboard()` from
+  `@/lib/utils/copy-to-clipboard` for copy actions; never call
+  `navigator.clipboard.writeText()` directly. Keep fallbacks non-security and
+  add Vitest coverage for missing/rejected capabilities plus an `rg` audit.
+
 ## Store Structure (Domain Slices)
 
 ```text
@@ -82,6 +91,10 @@ For rebasing or finishing PRs written against the old Next.js runtime, follow
 **Format:** `{id, type, action, payload, timestamp}`.
 
 Use subscription hooks only; the WS client auto-deduplicates.
+
+**Task overview vs. session detail:** Sidebar, Kanban, mobile-switcher, and dashboard rows read the shared task snapshot/`Task.statusSummary`; never call `subscribeSession` per row. A global `task.status_summary.updated` handler fans out shared-cache updates, while opened detail surfaces consume rich streams. Extend the bounded backend projection for new badges; see the [spec](../../docs/specs/platform/bounded-task-status-delivery.md) and [ADR](../../docs/decisions/2026-08-01-separate-task-summary-session-stream-traffic.md).
+
+**Branch-scoped task state:** For live worktree/session state plus `task_prs`, key by `(repository, checked-out branch)`, not task/repository alone. `branch_switched` invalidates prior status/commits; reject late results with a generation/identity guard and preserve siblings. Historical PRs affect Changes only when `repository_id` and normalized `head_branch` match; Review/PR history may still show them. Test single/multi-repo cases and desktop/mobile Changes behavior.
 
 When changing task lifecycle WS handlers (`task.updated`, `task.deleted`,
 `task.state_changed`), check both kanban and Office surfaces. Archive/delete
@@ -163,6 +176,13 @@ surface.
   clicks must not leave stale activation intent, and Dockview
   `.dv-default-tab-action` close controls should be treated as close/delete
   actions rather than session-switch intent.
+- **Dockview environment switching:** Reusable or default layouts may omit
+  group IDs after ephemeral-panel filtering. Restore active views only after
+  session and ephemeral-panel reconciliation; correlate ID-less target groups
+  to post-reconciliation live groups using stable IDs when present and
+  positional fallback otherwise. Treat `chat` and `session:*` as semantic
+  targets only when `activeSessionId` is non-null. Add regressions for an
+  ID-less default layout and a null-session default path.
 - **GitHub PR status UI:** visual PR/CI status surfaces should use the shared
   helpers in `apps/web/components/github/pr-task-icon.tsx`
   (`hasPRChecksPassedForDisplay`, `hasPRChecksInProgressForDisplay`, and
@@ -173,6 +193,11 @@ surface.
   actions. Merge readiness must use `isPRReadyToMerge`, which requires GitHub's
   explicit `checks_state === "success"` rollup. When changing PR status behavior,
   update both `pr-task-icon.test.ts` and `pr-status-chip.test.tsx`.
+- **GitHub PR multi-association UI:** Keep the complete PR association list for
+  tabs and unlink controls, including terminal or merged siblings. Derive a
+  separate `openPRs` view only for aggregate status and automation. When this
+  behavior changes, cover desktop and mobile unlinking of a terminal sibling
+  and the two-to-one association collapse/focus path.
 - **Task repository labels:** user-facing task/card repo chips should display a
   stable repo slug or name (`owner/repo` when known, otherwise the repo name),
   not a local filesystem path. Local clone paths or folder paths belong in
