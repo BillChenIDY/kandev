@@ -285,6 +285,13 @@ test.describe("Cross-task agent message attribution", () => {
   test("badge link points to the sender task", async ({ testPage, apiClient, seedData }) => {
     const target = await createIdleTarget(apiClient, seedData, "Target — link check");
     const targetSession = await openTask(testPage, target.id);
+    await waitForSessionState(apiClient, {
+      taskId: target.id,
+      sessionId: target.sessionId,
+      expectedState: "WAITING_FOR_INPUT",
+      message: "link-check target must be ready before the prompt-path follow-up",
+      timeout: 30_000,
+    });
     await expect(targetSession.chat).toContainText("ready for instructions", { timeout: 30_000 });
 
     const sender = await createSenderTaskingTarget(
@@ -312,6 +319,13 @@ test.describe("Cross-task agent message attribution", () => {
   }) => {
     const target = await createIdleTarget(apiClient, seedData, "Target — rename check");
     const targetSession = await openTask(testPage, target.id);
+    await waitForSessionState(apiClient, {
+      taskId: target.id,
+      sessionId: target.sessionId,
+      expectedState: "WAITING_FOR_INPUT",
+      message: "rename-check target must be ready before the prompt-path follow-up",
+      timeout: 30_000,
+    });
     await expect(targetSession.chat).toContainText("ready for instructions", { timeout: 30_000 });
 
     const sender = await createSenderTaskingTarget(
