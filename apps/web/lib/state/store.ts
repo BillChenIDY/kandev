@@ -330,7 +330,6 @@ export type AppState = KanbanSlice & {
   setPlanMode: (sessionId: string, enabled: boolean) => void;
   setTranscriptAutoScrollEnabled: UIA["setTranscriptAutoScrollEnabled"];
   setTranscriptScrollTop: UIA["setTranscriptScrollTop"];
-  setTranscriptVirtuosoState: UIA["setTranscriptVirtuosoState"];
   setReviewPRSelection: UIA["setReviewPRSelection"];
   setActiveDocument: (sessionId: string, doc: UISliceTypes.ActiveDocument | null) => void;
   setSystemHealth: (response: SystemHealthResponse) => void;

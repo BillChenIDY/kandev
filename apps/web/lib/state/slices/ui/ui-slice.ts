@@ -91,7 +91,6 @@ export const defaultUIState: UISliceState = {
   transcriptAutoScroll: {
     enabledBySessionId: {},
     scrollTopBySessionId: {},
-    virtuosoStateBySessionId: {},
   },
   reviewPRSelection: { selectedKeyByTaskId: {} },
   documentPanel: { activeDocumentBySessionId: {} },
@@ -473,10 +472,6 @@ export const createUISlice: StateCreator<UISlice, [["zustand/immer", never]], []
     set((draft) => {
       draft.transcriptAutoScroll.scrollTopBySessionId[sessionId] = scrollTop;
       setStoredAutoScrollTop(sessionId, scrollTop);
-    }),
-  setTranscriptVirtuosoState: (sessionId, state) =>
-    set((draft) => {
-      draft.transcriptAutoScroll.virtuosoStateBySessionId[sessionId] = state;
     }),
   setReviewPRSelection: (taskId, selectedKey) =>
     set((draft) => {
