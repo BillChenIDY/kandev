@@ -4,6 +4,7 @@ import { useRegularMode } from "../../helpers/regular-mode";
 import type { SeedData } from "../../fixtures/test-base";
 import type { ApiClient } from "../../helpers/api-client";
 import { seedClarificationSession } from "../../helpers/clarification";
+import { waitForSessionState } from "../../helpers/session";
 import { SessionPage } from "../../pages/session-page";
 import { KanbanPage } from "../../pages/kanban-page";
 import { SidebarFilterPopoverPage } from "../../pages/sidebar-filter-popover";
@@ -110,14 +111,13 @@ test.describe("Clarification flow", () => {
     // The mock agent reaches the clarification call asynchronously. Wait for
     // the owning session to park before opening the page, then explicitly
     // establish the Review state that the answer should move it out of.
-    await expect
-      .poll(
-        async () =>
-          (await apiClient.listTaskSessions(task.id)).sessions.find((s) => s.id === task.session_id)
-            ?.state,
-        { timeout: 30_000 },
-      )
-      .toBe("WAITING_FOR_INPUT");
+    await waitForSessionState(apiClient, {
+      taskId: task.id,
+      sessionId: task.session_id,
+      expectedState: "WAITING_FOR_INPUT",
+      message: "clarification session must park before the Review-state transition",
+      timeout: 30_000,
+    });
     await apiClient.updateTaskState(task.id, "REVIEW");
     await expect.poll(async () => (await apiClient.getTask(task.id)).state).toBe("REVIEW");
 
@@ -267,11 +267,13 @@ test.describe("Clarification flow", () => {
       })
       .toBe(timeoutStep.id);
 
-    const sessionsAfterTimeout = await apiClient.listTaskSessions(task.id);
-    const primarySession = sessionsAfterTimeout.sessions.find(
-      (candidate) => candidate.id === task.session_id,
-    );
-    expect(primarySession?.state).toBe("WAITING_FOR_INPUT");
+    await waitForSessionState(apiClient, {
+      taskId: task.id,
+      sessionId: task.session_id,
+      expectedState: "WAITING_FOR_INPUT",
+      message: "timed-out clarification session must remain ready for a deferred answer",
+      timeout: 30_000,
+    });
 
     // Agent moved on; a late custom answer remains editable and goes through
     // the event fallback as a new prompt.
