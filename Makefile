@@ -139,7 +139,7 @@ help:
 	@echo "  lint-web         Run ESLint"
 	@echo "  lint-format      Check formatting with Prettier (web/cli/packages)"
 	@echo "  dead-code-web    Find unused web files, exports, and dependencies"
-	@echo "  dead-code-go     Find unreachable production Go functions"
+	@echo "  dead-code-go     Find unreachable Go functions (host config; verify other targets before deletion)"
 	@echo "  fmt              Format all code"
 	@echo "  fmt-backend      Format Go code"
 	@echo "  fmt-web          Format web/cli/packages with Prettier, then ESLint --fix (web)"
