@@ -183,6 +183,9 @@ surface.
   positional fallback otherwise. Treat `chat` and `session:*` as semantic
   targets only when `activeSessionId` is non-null. Add regressions for an
   ID-less default layout and a null-session default path.
+- **Conditional review-panel ownership:** `pr-detail` is visible only for active tasks with linked PR/MR; default layouts supply a preferred group/tab but do not make empty tabs persistent.
+  Hydrated review loss removes canonical panels; restoration/maximized layouts and offered/dismissed markers suppress insertion.
+  Existing panels sync provider/review identity without moving tabs.
 - **GitHub PR status UI:** visual PR/CI status surfaces should use the shared
   helpers in `apps/web/components/github/pr-task-icon.tsx`
   (`hasPRChecksPassedForDisplay`, `hasPRChecksInProgressForDisplay`, and

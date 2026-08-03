@@ -257,6 +257,7 @@ Every long-running goroutine must have a single owner with explicit start and st
 You may still list the column in the `CREATE TABLE` so fresh DBs get it inline, but the migration is the source of truth for evolution and must stand alone. New columns also need: the struct field in `models/`, the DTO field + `ToAPI` in `pkg/api/v1/`, and every `CreateX`/`UpdateX`/bulk write in the repo that should set it.
 
 **Table-rebuild migrations:** When a legacy or constraint migration recreates a table, mirror every new column in the replacement `CREATE TABLE` and `INSERT ... SELECT` copy list; add a replay regression test proving values, including timestamps, survive.
+Built-in prompt content refreshes are seed-data migrations, not schema migrations. Match only known historical content hashes after applying the same normalization as the embedded prompt loader, require `created_at == updated_at` to preserve user edits, and use a conditional update over the original row values to avoid racing concurrent edits. Keep these refreshes with prompt seeding rather than `runMigrations()`.
 
 ## Code-quality limits
 
