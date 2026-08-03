@@ -69,6 +69,7 @@
   "failedToConnectToBackend": "Ƒàĩĺēď ţō ćōńńēćţ ţō ƀàćķēńď",
   "failedToCreateProfile": "Ƒàĩĺēď ţō ćŕēàţē ƥŕōƒĩĺē",
   "failedToCreateSecret": "Ƒàĩĺēď ţō ćŕēàţē śēćŕēţ",
+  "missingSecretReference": "Ḿĩśśĩńĝ śēćŕēţ ŕēƒēŕēńćē",
   "failedToSaveProfile": "Ƒàĩĺēď ţō śàvē ƥŕōƒĩĺē",
   "filesSelected": "Ƒĩĺēś Śēĺēćţēď",
   "gitIdentity": "Ĝĩţ Ĩďēńţĩţŷ",

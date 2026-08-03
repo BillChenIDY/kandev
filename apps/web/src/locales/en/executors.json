@@ -69,6 +69,7 @@
   "failedToConnectToBackend": "Failed to connect to backend",
   "failedToCreateProfile": "Failed to create profile",
   "failedToCreateSecret": "Failed to create secret",
+  "missingSecretReference": "Missing secret reference",
   "failedToSaveProfile": "Failed to save profile",
   "filesSelected": "Files Selected",
   "gitIdentity": "Git Identity",

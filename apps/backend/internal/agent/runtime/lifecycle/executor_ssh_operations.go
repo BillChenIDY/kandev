@@ -726,6 +726,14 @@ func sshRemoteAgentEnv(req *ExecutorCreateRequest) map[string]string {
 	for key, value := range managedGitHubBrokerEnv(req.Env) {
 		env[key] = value
 	}
+	for _, key := range req.ApprovedSecretEnvKeys {
+		if !posixSSHEnvIdentifier.MatchString(key) {
+			continue
+		}
+		if value := req.Env[key]; value != "" {
+			env[key] = value
+		}
+	}
 	if len(env) == 0 {
 		return nil
 	}
